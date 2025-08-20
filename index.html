@@ -1,0 +1,117 @@
+<?php
+$confirmation = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $webhook_url = "https://discord.com/api/webhooks/1407697828720939149/MoGZxxoqoO8Mn1dwsdQCZVGABt3KUIn9fElxdp-2VjDvFh6I9vUc8If_QMmyeHCTau7O"; // Mets ici ton vrai lien
+
+    function field($name) {
+        return htmlspecialchars($_POST[$name] ?? '');
+    }
+
+    $nom = field('nom');
+    $age = field('age');
+    $discord = field('discord');
+    $steam = field('steam');
+    $departement = field('departement');
+    $experience = field('experience');
+    $motivations = field('motivations');
+    $disponibilites = field('disponibilites');
+    $plages = field('plages');
+    $scenario1 = field('scenario1');
+    $scenario2 = field('scenario2');
+
+    $json_data = json_encode([
+        "embeds" => [[
+            "title" => "📋 Nouvelle candidature VCMC",
+            "color" => 16711680,
+            "fields" => [
+                ["name"=>"👤 Nom RP","value"=>$nom,"inline"=>true],
+                ["name"=>"🎂 Âge","value"=>$age,"inline"=>true],
+                ["name"=>"💬 Discord","value"=>$discord,"inline"=>false],
+                ["name"=>"🆔 Steam/Rockstar ID","value"=>$steam,"inline"=>false],
+                ["name"=>"🏥 Département visé","value"=>$departement,"inline"=>false],
+                ["name"=>"📖 Expérience RP/EMS","value"=>$experience,"inline"=>false],
+                ["name"=>"🔥 Motivations","value"=>$motivations,"inline"=>false],
+                ["name"=>"📆 Disponibilités","value"=>$disponibilites,"inline"=>true],
+                ["name"=>"⏰ Plages horaires","value"=>$plages,"inline"=>true],
+                ["name"=>"🎭 Scénario 1","value"=>$scenario1,"inline"=>false],
+                ["name"=>"🎭 Scénario 2","value"=>$scenario2,"inline"=>false]
+            ],
+            "footer"=>["text"=>"VCMC — Formulaire de candidature"],
+            "timestamp"=>date("c")
+        ]]
+    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+    $ch = curl_init($webhook_url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-type: application/json']);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_exec($ch);
+    curl_close($ch);
+
+    $confirmation = "✅ Votre candidature a bien été envoyée sur Discord !";
+}
+?>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulaire de candidature VCMC</title>
+    <style>
+        body { font-family: Arial; background: #f0f0f0; padding: 20px; }
+        form { background: #fff; padding: 20px; border-radius: 10px; max-width: 600px; margin: auto; }
+        input, textarea, select { width: 100%; margin: 5px 0 15px 0; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+        button { padding: 10px 20px; border: none; border-radius: 5px; background: #e74c3c; color: white; cursor: pointer; }
+        .confirmation { background: #2ecc71; color: white; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <?php if($confirmation): ?>
+        <div class="confirmation"><?= $confirmation ?></div>
+    <?php endif; ?>
+
+    <form method="POST">
+        <label>Nom RP</label>
+        <input type="text" name="nom" placeholder="Jean Dupont" required>
+
+        <label>Âge</label>
+        <input type="number" name="age" placeholder="25" required>
+
+        <label>Discord</label>
+        <input type="text" name="discord" placeholder="Jean#1234" required>
+
+        <label>Steam/Rockstar ID</label>
+        <input type="text" name="steam" placeholder="STEAM_0:1:12345678" required>
+
+        <label>Département visé</label>
+        <select name="departement" required>
+            <option value="">-- Sélectionnez --</option>
+            <option value="Urgences">Urgences</option>
+            <option value="Ambulances">Ambulances</option>
+        </select>
+
+        <label>Expérience RP/EMS</label>
+        <textarea name="experience" placeholder="J'ai joué EMS sur plusieurs serveurs..." required></textarea>
+
+        <label>Motivations</label>
+        <textarea name="motivations" placeholder="Je souhaite rejoindre VCMC pour..." required></textarea>
+
+        <label>Disponibilités</label>
+        <input type="text" name="disponibilites" placeholder="Lundi, Mercredi, Vendredi" required>
+
+        <label>Plages horaires</label>
+        <input type="text" name="plages" placeholder="18h-22h" required>
+
+        <label>Scénario 1</label>
+        <textarea name="scenario1" placeholder="Comment réagiriez-vous si...?" required></textarea>
+
+        <label>Scénario 2</label>
+        <textarea name="scenario2" placeholder="Que feriez-vous si...?" required></textarea>
+
+        <button type="submit">Envoyer ma candidature</button>
+    </form>
+</body>
+</html>
