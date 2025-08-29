@@ -1,166 +1,312 @@
-<?php
-$confirmation = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $webhook_url = "https://discord.com/api/webhooks/1407697828720939149/MoGZxxoqoO8Mn1dwsdQCZVGABt3KUIn9fElxdp-2VjDvFh6I9vUc8If_QMmyeHCTau7O";
-
-    function field($name) {
-        return htmlspecialchars($_POST[$name] ?? '');
-    }
-
-    $nom = field('nom');
-    $age = field('age');
-    $discord = field('discord');
-    $steam = field('steam');
-    $departement = field('departement');
-    $experience = field('experience');
-    $motivations = field('motivations');
-    $disponibilites = field('disponibilites');
-    $plages = field('plages');
-    $scenario1 = field('scenario1');
-    $scenario2 = field('scenario2');
-    $scenario3 = field('scenario3');
-    $scenario4 = field('scenario4');
-    $scenario5 = field('scenario5');
-
-    $json_data = json_encode([
-        "embeds" => [[
-            "title" => "📋 Nouvelle candidature VCMC",
-            "color" => 16711680,
-            "fields" => [
-                ["name" => "👤 Nom RP", "value" => $nom ?: "Ex : John Doe", "inline" => true],
-                ["name" => "🎂 Âge", "value" => $age ?: "Ex : 25", "inline" => true],
-                ["name" => "💬 Discord", "value" => $discord ?: "Ex : JohnDoe#1234", "inline" => false],
-                ["name" => "🆔 Steam/Rockstar ID", "value" => $steam ?: "Ex : STEAM_0:1:123456", "inline" => false],
-                ["name" => "🏥 Département visé", "value" => $departement ?: "Ex : Ambulance", "inline" => false],
-                ["name" => "📖 Expérience RP/EMS", "value" => $experience ?: "Ex : 2 ans RP EMS", "inline" => false],
-                ["name" => "🔥 Motivations", "value" => $motivations ?: "Ex : Aider les joueurs en RP", "inline" => false],
-                ["name" => "📆 Disponibilités", "value" => $disponibilites ?: "Ex : Lundi-Vendredi", "inline" => true],
-                ["name" => "⏰ Plages horaires", "value" => $plages ?: "Ex : 18h-22h", "inline" => true],
-                ["name" => "🎭 Scénario 1", "value" => $scenario1 ?: "Ex : Alerter les secours et sécuriser la zone", "inline" => false],
-                ["name" => "🎭 Scénario 2", "value" => $scenario2 ?: "Ex : Commencer la réanimation et demander de l’aide immédiatement", "inline" => false],
-                ["name" => "🎭 Scénario 3", "value" => $scenario3 ?: "Ex : Sécuriser la zone et appeler la police/renforts", "inline" => false],
-                ["name" => "🎭 Scénario 4", "value" => $scenario4 ?: "Ex : Vérifier les signes vitaux et appeler les secours", "inline" => false],
-                ["name" => "🎭 Scénario 5", "value" => $scenario5 ?: "Ex : Administrer l’adrénaline si prescrite et alerter les secours", "inline" => false],
-            ],
-            "footer" => ["text" => "VCMC — Formulaire de candidature"],
-            "timestamp" => date("c"),
-        ]]
-    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-
-    $ch = curl_init($webhook_url);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-type: application/json']);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $response = curl_exec($ch);
-    curl_close($ch);
-
-    $confirmation = $response !== false ? "✅ Votre candidature a bien été envoyée !" : "❌ Une erreur est survenue.";
-}
-?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>VCMC - Candidature</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Candidature EMS - SAMS</title>
 <style>
-body { font-family: Arial, sans-serif; background:#f8f9fa; margin:0; padding:0; }
-.container { max-width:800px; margin:50px auto; padding:20px; background:white; border-radius:10px; box-shadow:0 0 15px rgba(0,0,0,0.1); }
-h1 { text-align:center; color:#d32f2f; }
-label { display:block; margin-top:15px; font-weight:bold; }
-input, select, textarea { width:100%; padding:10px; margin-top:5px; border-radius:5px; border:1px solid #ccc; }
-button { background:#d32f2f; color:white; padding:12px 20px; border:none; border-radius:5px; cursor:pointer; margin-top:20px; width:100%; font-size:16px; }
-button:hover { background:#b71c1c; }
-.confirm { margin-top:20px; font-weight:bold; text-align:center; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: url('https://fivemgg.nyc3.digitaloceanspaces.com/fivem/2024/04/16115314/Ocean-Hospital-MLO.jpeg') no-repeat center center fixed;
+    background-size: cover;
+  }
+
+  .overlay {
+    background: rgba(0,0,0,0.65);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 850px;
+    width: 100%;
+    background: rgba(255,255,255,0.95);
+    padding: 40px 50px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    overflow: hidden;
+  }
+
+  .logo {
+    max-width: 150px;
+    margin: 0 auto 20px auto;
+    display: block;
+  }
+
+  h1 {
+    text-align: center;
+    color: #2f3640;
+    margin-bottom: 30px;
+    font-size: 2.2rem;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #dcdde1;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 25px;
+  }
+
+  .progress {
+    height: 100%;
+    background: #00a8ff;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    margin-top: 35px;
+    padding: 10px 0;
+  }
+
+  .section-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #2f3640;
+  }
+
+  .section-header span {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+  }
+
+  .section-content {
+    display: none;
+    margin-top: 15px;
+  }
+
+  label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #2f3640;
+  }
+
+  input[type=text], input[type=number], textarea {
+    width: 100%;
+    padding: 12px 15px;
+    margin-top: 8px;
+    border-radius: 8px;
+    border: 1px solid #dcdde1;
+    font-size: 15px;
+    transition: 0.3s;
+  }
+
+  input[type=text]:focus, input[type=number]:focus, textarea:focus {
+    outline: none;
+    border-color: #00a8ff;
+    box-shadow: 0 0 8px rgba(0,168,255,0.3);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 90px;
+  }
+
+  button {
+    margin-top: 30px;
+    background: #00a8ff;
+    color: white;
+    border: none;
+    padding: 16px 30px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 100%;
+  }
+
+  button:hover {
+    background: #0097e6;
+    transform: translateY(-2px);
+  }
+
+  .success {
+    display: none;
+    margin-top: 20px;
+    padding: 15px;
+    background: #44bd32;
+    color: white;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1rem;
+    animation: fadeIn 0.5s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(-10px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+
 </style>
 </head>
 <body>
-<div class="container">
-<h1>📋 Formulaire de candidature VCMC</h1>
+<div class="overlay">
+  <div class="container">
+    <img src="https://dunb17ur4ymx4.cloudfront.net/packages/images/a828492200c5317837c63b4166ed26f762cbfd1c.png" alt="Logo SAMS" class="logo">
+    <h1>Candidature EMS - SAMS</h1>
 
-<?php if($confirmation): ?>
-<p class="confirm"><?= $confirmation ?></p>
-<?php endif; ?>
+    <div class="progress-bar">
+      <div class="progress" id="progress"></div>
+    </div>
 
-<form method="POST">
-<label>Nom RP</label>
-<input type="text" name="nom" placeholder="Ex : John Doe" required>
+    <form id="candidatureSAMS">
 
-<label>Âge</label>
-<input type="number" name="age" placeholder="Ex : 25" required>
+      <!-- Informations générales -->
+      <div class="section">
+        <div class="section-header">
+          <h2>Informations générales</h2>
+          <span>+</span>
+        </div>
+        <div class="section-content">
+          <label>Nom RP :</label>
+          <input type="text" name="nomRP" required>
+          <label>Âge RP :</label>
+          <input type="number" name="ageRP" required min="18">
+          <label>Expérience dans les métiers EMS ou RP médical :</label>
+          <textarea name="experience" required></textarea>
+          <label>Motivation et disponibilité :</label>
+          <textarea name="motivation" required></textarea>
+          <label>Pourquoi souhaitez-vous rejoindre le SAMS ?</label>
+          <textarea name="raison" required></textarea>
+          <label>Combien de temps pouvez-vous consacrer au rôle d’EMS par semaine ?</label>
+          <input type="text" name="temps" required>
+          <label>Êtes-vous prêt à respecter les règles du SAMS et les procédures RP médicales ?</label>
+          <input type="text" name="regles" required>
+        </div>
+      </div>
 
-<label>Discord</label>
-<input type="text" name="discord" placeholder="Ex : JohnDoe#1234" required>
+      <!-- Connaissances RP médicales -->
+      <div class="section">
+        <div class="section-header">
+          <h2>Connaissances RP médicales</h2>
+          <span>+</span>
+        </div>
+        <div class="section-content">
+          <label>Connaissances RP médicales :</label>
+          <textarea name="connaissances" required></textarea>
+          <label>Que feriez-vous si un patient est inconscient mais respire encore ?</label>
+          <textarea name="inconscient" required></textarea>
+          <label>Que feriez-vous si un patient est en arrêt cardiaque ?</label>
+          <textarea name="arretCardiaque" required></textarea>
+          <label>Connaissez-vous les différents grades/positions au sein d’une équipe EMS ?</label>
+          <textarea name="grades" required></textarea>
+          <label>Comment réagiriez-vous face à un patient agressif ou non coopératif ?</label>
+          <textarea name="patientAgressif" required></textarea>
+        </div>
+      </div>
 
-<label>Steam / Rockstar ID</label>
-<input type="text" name="steam" placeholder="Ex : STEAM_0:1:123456" required>
+      <!-- Scénarios RP -->
+      <div class="section">
+        <div class="section-header">
+          <h2>Scénarios RP</h2>
+          <span>+</span>
+        </div>
+        <div class="section-content">
+          <label>Accident de voiture avec plusieurs victimes :</label>
+          <textarea name="scenarios1" required></textarea>
+          <label>Seul sur les lieux avec un patient gravement blessé :</label>
+          <textarea name="scenarios2" required></textarea>
+        </div>
+      </div>
 
-<label>Département</label>
-<select name="departement" required>
-<option value="">-- Choisir votre département --</option>
-<option value="Pharmacie">Pharmacie</option>
-<option value="Ambulance">Ambulance</option>
-<option value="Psychologue">Psychologue</option>
-<option value="Urgences">Urgences</option>
-<option value="Paramédical">Paramédical</option>
-</select>
-
-<label>Expérience RP/EMS</label>
-<textarea name="experience" placeholder="Ex : 2 ans RP EMS" required></textarea>
-
-<label>Motivations</label>
-<textarea name="motivations" placeholder="Ex : Aider les joueurs en RP" required></textarea>
-
-<label>Disponibilités</label>
-<input type="text" name="disponibilites" placeholder="Ex : Lundi-Vendredi" required>
-
-<label>Plages horaires</label>
-<input type="text" name="plages" placeholder="Ex : 18h-22h" required>
-
-<!-- Scénarios -->
-<label>Scénario 1 : Accident de voiture</label>
-<select name="scenario1" required>
-<option value="">-- Choisir la bonne réponse --</option>
-<option value="Alerter les secours et sécuriser la zone">Alerter les secours et sécuriser la zone</option>
-<option value="Ignorer l’accident et continuer votre route">Ignorer l’accident et continuer votre route</option>
-<option value="Prendre des photos/filmer la scène">Prendre des photos/filmer la scène</option>
-</select>
-
-<label>Scénario 2 : Réanimation complexe</label>
-<select name="scenario2" required>
-<option value="">-- Choisir la bonne réponse --</option>
-<option value="Commencer la réanimation et demander de l’aide immédiatement">Commencer la réanimation et demander de l’aide immédiatement</option>
-<option value="Attendre que quelqu’un d’autre intervienne">Attendre que quelqu’un d’autre intervienne</option>
-<option value="Administrer des médicaments sans protocole">Administrer des médicaments sans protocole</option>
-</select>
-
-<label>Scénario 3 : Conflit violent</label>
-<select name="scenario3" required>
-<option value="">-- Choisir la bonne réponse --</option>
-<option value="Sécuriser la zone et appeler la police/renforts">Sécuriser la zone et appeler la police/renforts</option>
-<option value="Intervenir seul sans protection">Intervenir seul sans protection</option>
-<option value="Filmer la scène pour les réseaux sociaux">Filmer la scène pour les réseaux sociaux</option>
-</select>
-
-<label>Scénario 4 : Patient inconscient</label>
-<select name="scenario4" required>
-<option value="">-- Choisir la bonne réponse --</option>
-<option value="Vérifier les signes vitaux et appeler les secours">Vérifier les signes vitaux et appeler les secours</option>
-<option value="Bouger le patient sans précaution">Bouger le patient sans précaution</option>
-<option value="Attendre que quelqu’un d’autre vienne">Attendre que quelqu’un d’autre vienne</option>
-</select>
-
-<label>Scénario 5 : Allergie grave</label>
-<select name="scenario5" required>
-<option value="">-- Choisir la bonne réponse --</option>
-<option value="Administrer l’adrénaline si prescrite et alerter les secours">Administrer l’adrénaline si prescrite et alerter les secours</option>
-<option value="Ignorer et donner seulement de l’eau">Ignorer et donner seulement de l’eau</option>
-<option value="Donner un médicament non prescrit">Donner un médicament non prescrit</option>
-</select>
-
-<button type="submit">Envoyer ma candidature</button>
-</form>
+      <button type="submit">Envoyer la candidature</button>
+      <div class="success" id="successMessage">✅ Votre candidature a été envoyée avec succès !</div>
+    </form>
+  </div>
 </div>
+
+<script>
+// Sections collapsables
+document.querySelectorAll(".section-header").forEach(header => {
+  header.addEventListener("click", () => {
+    const content = header.nextElementSibling;
+    const icon = header.querySelector("span");
+    if(content.style.display === "block"){
+      content.style.display = "none";
+      icon.textContent = "+";
+    } else {
+      content.style.display = "block";
+      icon.textContent = "-";
+    }
+  });
+});
+
+// Progression
+const form = document.getElementById("candidatureSAMS");
+const progress = document.getElementById("progress");
+const inputs = form.querySelectorAll("input, textarea");
+
+inputs.forEach(input => {
+  input.addEventListener("input", updateProgress);
+});
+
+function updateProgress(){
+  const total = inputs.length;
+  let filled = 0;
+  inputs.forEach(i => { if(i.value.trim() !== "") filled++; });
+  progress.style.width = `${Math.floor((filled/total)*100)}%`;
+}
+
+// Envoi vers Discord
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target).entries());
+
+  // Validation simple
+  if(data.ageRP < 18){
+    alert("L'âge RP doit être au moins 18 ans.");
+    return;
+  }
+
+  await fetch("https://discord.com/api/webhooks/1410937215151771710/2IVh-sbz6loIfCbA9YXwVVc6V9Pl8vC-hQVkBwyCnuBuj2aVi_-Yj5ybxil5VkOVvgXy", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      embeds:[{
+        title: "🩺 Nouvelle candidature SAMS",
+        description: "⚠️ Merci de ne pas supprimer cette candidature avant d’avoir réalisé l’entretien.",
+        color: 3447003,
+        fields: [
+          { name: "👤 Nom RP", value: data.nomRP },
+          { name: "🎂 Âge RP", value: data.ageRP },
+          { name: "💼 Expérience EMS / RP médical", value: data.experience },
+          { name: "📝 Motivation et disponibilité", value: data.motivation },
+          { name: "❓ Pourquoi rejoindre le SAMS ?", value: data.raison },
+          { name: "⏰ Temps disponible par semaine", value: data.temps },
+          { name: "📜 Respect des règles SAMS", value: data.regles },
+          { name: "📚 Connaissances RP médicales", value: data.connaissances },
+          { name: "💤 Patient inconscient mais respire", value: data.inconscient },
+          { name: "💔 Patient en arrêt cardiaque", value: data.arretCardiaque },
+          { name: "🎖️ Connaissance des grades EMS", value: data.grades },
+          { name: "😡 Patient agressif / non coopératif", value: data.patientAgressif },
+          { name: "🚗 Scénario : accident multiple", value: data.scenarios1 },
+          { name: "🚑 Scénario : seul avec patient grave", value: data.scenarios2 }
+        ],
+        footer: { text: "Candidature envoyée automatiquement via le formulaire SAMS" },
+        timestamp: new Date()
+      }]
+    })
+  });
+
+  document.getElementById("successMessage").style.display = "block";
+  form.reset();
+  updateProgress();
+});
+</script>
 </body>
 </html>
